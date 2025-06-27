@@ -1,24 +1,47 @@
-const tasks = [
-    {
-        title: "Nấu cơm",
-        completed: "false"
-    },
-    {
-        title: "Quét nhà",
-        completed: "false"
-    },
-    {
-        title: "rửa bát",
-        completed: "true"
-    }
-];
+const tasks = [];
 
 const taskList = document.querySelector("#task-list");
+const todoForm = document.querySelector("#todo-form");
+const todoInput = document.querySelector("#todo-input");
 
-const html = tasks
-    .map(
-        (task) =>
-            `<li class="task-item ${task.completed ? "completed" : ""}">
+taskList.onclick = function (e) {
+    const taskItem = e.target.closest(".task-item");
+    const taskIndex = +taskItem.getAttribute("task-index");
+    const task = tasks[taskIndex];
+
+    if (e.target.closest(".edit")) {
+        const newTitle = prompt("Enter the new task title: ", task.title);
+        task.title = newTitle;
+        render();
+    } else if (e.target.closest(".done")) {
+        console.log("Mark as done/undone");
+    } else if (e.target.closest(".delete")) {
+        console.log("Delete");
+    }
+};
+
+todoForm.onsubmit = function (e) {
+    e.preventDefault();
+
+    const value = todoInput.value.trim();
+
+    if (!value) {
+        return alert("Please write somthing!");
+    }
+
+    tasks.push({
+        title: value,
+        completed: false
+    });
+    render();
+    todoInput.value = "";
+};
+
+function render() {
+    const html = tasks
+        .map(
+            (task, index) =>
+                `<li class="task-item ${task.completed ? "completed" : ""}" task-index="${index}">
             <span class="task-title">${task.title}</span>
             <div class="task-action">
                 <button class="task-btn edit">Edit</button>
@@ -26,7 +49,10 @@ const html = tasks
                 <button class="task-btn delete">Delete</button>
             </div>
         </li>`
-    )
-    .join("");
+        )
+        .join("");
 
-taskList.innerHTML = html;
+    taskList.innerHTML = html;
+}
+
+render();
